@@ -1,0 +1,32 @@
+service: petdori-resizing-image
+frameworkVersion: '3'
+plugins:
+  - serverless-lambda-edge-pre-existing-cloudfront
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iam:
+    role: ${AWS_CUSTOM_LAMBDA_ROLE}
+
+
+functions:
+  jpgImageResize:
+    name: 'lambda-edge-image-resize-jpg'
+    handler: index.imageResize 
+    events:
+      - preExistingCloudFront:
+          distributionId: ${AWS_CLOUDFRONT_DISTRIBUTION_ID} 
+          eventType: origin-response
+          pathPattern: ${JPG_PATH}
+          includeBody: false
+  pngImageResize:
+    name: 'lambda-edge-image-resize-png'
+    handler: index.imageResize 
+    events:
+      - preExistingCloudFront:
+          distributionId: ${AWS_CLOUDFRONT_DISTRIBUTION_ID}
+          eventType: origin-response
+          pathPattern: ${PNG_PATH}
+          includeBody: false
